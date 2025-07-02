@@ -329,6 +329,27 @@ const projects = [
               >
                 <Github size={20} />
               </a>
+              <a
+                href="/Pranav_Sharma_CV.pdf"
+                download
+                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  width={20}
+                  height={20}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                </svg>
+                Download My CV
+              </a>
+
+
             </div>
           </div>
 
@@ -551,6 +572,7 @@ const projects = [
           </div>
         </div>
       </section>
+
 
       {/* Contact Section */}
       <section id="contact" className="py-20 bg-gray-800">
