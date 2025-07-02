@@ -288,7 +288,7 @@ const projects = [
           <div className="mb-8 animate-fade-in">
             <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-110 hover:rotate-3">
               <img 
-                src="../profile-pic.png" 
+                src="/React_Web_CI_CD/profile-pic.png"
                 alt="Pranav Sharma" 
                 className="w-full h-full object-cover"
               />
