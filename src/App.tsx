@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+
 import { 
   Github, 
   Linkedin, 
@@ -61,6 +63,45 @@ function App() {
     };
   }, []);
 
+
+  const skillCategories = [
+  {
+    title: 'Programming Languages',
+    skills: ['Python', 'C++', 'MATLAB'],
+  },
+  {
+    title: 'Monitoring, Observability & Security',
+    skills: ['Grafana', 'Prometheus', 'CloudWatch', 'OWASP', 'Trivy', 'SonarQube'],
+  },
+  {
+    title: 'Databases',
+    skills: ['MySQL', 'DynamoDB', 'PostgreSQL'],
+  },
+  {
+    title: 'Version Control & CI/CD',
+    skills: ['GitHub', 'ArgoCD', 'Jenkins'],
+  },
+  {
+    title: 'Cloud & Infrastructure',
+    skills: ['AWS', 'Terraform', 'Docker', 'Kubernetes', 'Ansible'],
+  },
+  {
+    title: 'Networking',
+    skills: ['VPC', 'Subnets', 'CIDR Blocks', 'Internet Gateway', 'Route 53', 'Load Balancers (ALB/NLB)'],
+  },
+];
+
+
+const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+
+  const toggleCategory = (index: number) => {
+  setOpenIndex(openIndex === index ? null : index);
+};
+
+
+
+
   // Smooth scroll to section
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -73,6 +114,14 @@ function App() {
     }
     setIsMenuOpen(false);
   };
+
+  const [openCard, setOpenCard] = useState<number | null>(null);
+
+  const toggleCard = (index: number) => {
+    setOpenCard(openCard === index ? null : index);
+  };
+
+  
 
   const skills = [
     { name: 'Python', level: 95, icon: Code },
@@ -423,7 +472,7 @@ const projects = [
       </section>
 
       {/* Skills Section */}
-      <section id="skills" className="py-20 bg-gray-900">
+      {/* <section id="skills" className="py-20 bg-gray-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12" id="skills-header">
             <h2 className={`text-4xl font-bold mb-4 text-white transition-all duration-1000 ${
@@ -465,7 +514,62 @@ const projects = [
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
+
+
+      <section id="skills" className="py-20 bg-gray-900 text-white">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold mb-4 text-white">Technical Skills</h2>
+          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-emerald-400 mx-auto"></div>
+        </div>
+
+        {/* Responsive Card Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {skillCategories.map((category, index) => {
+            const isOpen = openCard === index;
+
+            return (
+              <div
+                key={index}
+                className={`rounded-xl bg-white/10 backdrop-blur-md shadow-lg transition-all duration-500 overflow-hidden hover:shadow-2xl`}
+              >
+                {/* Card Header */}
+                <button
+                  onClick={() => toggleCard(index)}
+                  className="w-full px-6 py-5 flex justify-between items-center focus:outline-none"
+                >
+                  <span className="text-lg font-semibold text-white">{category.title}</span>
+                  <span className="text-white">
+                    {isOpen ? <FaChevronUp /> : <FaChevronDown />}
+                  </span>
+                </button>
+
+                {/* Dropdown Content */}
+                <div
+                  className={`transition-all duration-700 ease-in-out overflow-hidden
+                    ${isOpen ? 'max-h-96 opacity-100 py-4 px-6' : 'max-h-0 opacity-0 px-6'}
+                  `}
+                >
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    {category.skills.map((skill, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-white/10 hover:bg-white/20 text-center rounded-md py-2 px-3 transition-all duration-300 shadow-sm"
+                      >
+                        {skill}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+
+
 
       {/* Experience Section */}
       <section id="experience" className="py-20 bg-gray-800">
