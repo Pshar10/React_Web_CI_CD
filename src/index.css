@@ -141,3 +141,64 @@ section {
 .bg-gray-700 {
   background-color: #374151 !important;
 }
+/* Stylish dropdown animation using scaleY */
+.dropdown {
+  transform-origin: top;
+  transform: scaleY(0);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.3s ease;
+  will-change: transform, opacity;
+}
+
+.dropdown.active {
+  transform: scaleY(1);
+  opacity: 1;
+}
+
+/* Optional: fade-in stagger effect for each skill tile */
+.skill-tile {
+  transition: background 0.3s ease, transform 0.3s ease;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.skill-tile:hover {
+  background: linear-gradient(to right, #3b82f6, #10b981);
+  transform: scale(1.05);
+  color: #fff;
+}
+
+@keyframes fade-up-delay {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up-delay {
+  animation: fade-up-delay 0.4s ease-out;
+}
+
+.skill-tile {
+  background: rgba(255, 255, 255, 0.05);
+  transition: background 0.3s ease, transform 0.3s ease, color 0.3s ease;
+}
+
+.skill-tile:hover {
+  background: linear-gradient(to right, #3b82f6, #10b981);
+  color: white;
+  transform: scale(1.05);
+}
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
