@@ -525,7 +525,7 @@ function App() {
               className="text-lg text-gray-400 max-w-2xl mx-auto mb-8 animate-slide-up"
               style={{ animationDelay: "0.4s" }}
             >
-              Master's graduate bridging acoustic science and cloud engineering
+              Bridging cloud engineering and acoustic science 
               to drive innovation in scalable, efficient systems with
               specialized expertise in spatial audio and DevOps automation.
             </p>
