@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { TypeAnimation } from 'react-type-animation';
+
+
 
 import {
   Github,
@@ -8,27 +11,27 @@ import {
   MapPin,
   Calendar,
   Award,
-  Code,
-  Cloud,
-  Database,
-  GitBranch,
-  Server,
-  Shield,
   CheckCircle,
   ExternalLink,
   ChevronDown,
   Menu,
   X,
+  ArrowUp,
 } from "lucide-react";
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [visibleElements, setVisibleElements] = useState(new Set());
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setScrollY(currentScrollY);
+      setShowScrollTop(currentScrollY > 500);
+    };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -146,24 +149,18 @@ function App() {
     setIsMenuOpen(false);
   };
 
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
 
   const toggleCard = (index: number) => {
-    if (openCard === index) {
-      setOpenCard(null);
-      setTimeout(() => {
-        setExpandedCards((prev) => {
-          const copy = new Set(prev);
-          copy.delete(index);
-          return copy;
-        });
-      }, 400);
-    } else {
-      setOpenCard(index);
-      setTimeout(() => {
-        setExpandedCards((prev) => new Set(prev).add(index));
-      }, 250); // slight delay to allow dropdown to open first
-    }
+    setOpenCard(openCard === index ? null : index);
   };
 
   const experience = [
@@ -242,7 +239,7 @@ function App() {
       title: "AI-Based Decay Parameter Estimation",
       subtitle: "Master's Thesis",
       description:
-        "Developed a novel DCNN model estimating decay parameters from reverberant speech signals with RMS errors of 2.9‑6 dB.",
+        "Developed a novel DCNN model estimating decay parameters from reverberant speech signals with RMS errors of 2.9‑6 dB.",
       technologies: ["Deep Learning", "Audio Processing", "Python"],
       github:
         "https://github.com/Pshar10/Blind-Estimation-of-EDC-from-Live-Signals",
@@ -352,34 +349,23 @@ function App() {
 
   const [openExp, setOpenExp] = useState<number | null>(null);
   const arrowRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [collapsingIndex, setCollapsingIndex] = useState<number | null>(null);
 
-  // const handleExpToggle = (isOpen: boolean, index: number) => {
-  //   if (isOpen) {
-  //     setOpenExp(null);
-  //     setTimeout(() => {
-  //       const btn = arrowRefs.current[index];
-  //       if (btn) {
-  //         btn.scrollIntoView({ behavior: "smooth", block: "center" });
-  //       }
-  //     }, 200); // was 800, now 400 for more responsive feel
-  //   } else {
-  //     setOpenExp(index);
-  //   }
-  // };
 
   const handleExpToggle = (index: number, isOpen: boolean) => {
-    if (isOpen) {
-      setOpenExp(null);
-      setTimeout(() => {
-        const btn = arrowRefs.current[index];
-        if (btn) {
-          btn.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-      }, 0); // Should match your collapse animation (400ms)
-    } else {
-      setOpenExp(index);
-    }
-  };
+  if (isOpen) {
+    setCollapsingIndex(index);      // Start collapsing animation
+    setTimeout(() => {
+      setOpenExp(null);             // Fully close after animation
+      setCollapsingIndex(null);
+      // scrollIntoView logic, if any, here
+    }, 300); // Match your CSS transition time (ms)
+  } else {
+    setOpenExp(index);
+  }
+};
+
+
 
   const initialVisibleCount = 6; // Show this many cards initially
 
@@ -430,7 +416,18 @@ function App() {
     : projects.slice(0, initialVisibleCount);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gray-900 text-white relative">
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="scroll-to-top fixed bottom-8 right-8 z-50 p-4 glass-button rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 hover:rotate-12 hidden md:block"
+          aria-label="Scroll to top"
+        >
+          <ArrowUp size={24} className="text-white" />
+        </button>
+      )}
+
       {/* Navigation */}
       <nav
         className={`fixed top-0 w-full z-50 transition-all duration-500 ease-out ${
@@ -441,9 +438,12 @@ function App() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent transition-all duration-300 hover:scale-105">
+            <button
+              onClick={scrollToTop}
+              className="text-2xl font-bold text-white transition-all duration-300 hover:scale-105 cursor-pointer hover:text-shadow-glow"
+            >
               Pranav Sharma
-            </div>
+            </button>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex space-x-8">
@@ -452,7 +452,7 @@ function App() {
                   <button
                     key={item}
                     onClick={() => scrollToSection(item.toLowerCase())}
-                    className="text-gray-300 hover:text-white transition-all duration-300 font-medium relative group"
+                    className="nav-item text-gray-300 hover:text-white transition-all duration-300 font-medium relative px-4 py-2 rounded-lg"
                   >
                     {item}
                     <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-emerald-400 transition-all duration-300 group-hover:w-full"></span>
@@ -494,105 +494,186 @@ function App() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-900">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-emerald-900/20"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]"></div>
+      {/* Hero Section with Particle Effect */}
+     <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-900 pt-32">
+  {/* Animated Background Gradient */}
+  <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-emerald-900/20"></div>
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]"></div>
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="mb-8 animate-fade-in">
-            <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-110 hover:rotate-3">
-              <img
-                src="/profile-pic.png"
-                alt="Pranav Sharma"
-                className="w-full h-full object-cover"
-              />
-            </div>
+  {/* Floating Particles */}
+  <div className="particles-container absolute inset-0 overflow-hidden pointer-events-none">
+    {/* Large floating particles */}
+    {[...Array(15)].map((_, i) => (
+      <div
+        key={`large-${i}`}
+        className="particle-large absolute rounded-full opacity-60"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          width: `${4 + Math.random() * 8}px`,
+          height: `${4 + Math.random() * 8}px`,
+          background: `linear-gradient(45deg, 
+            ${['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981'][Math.floor(Math.random() * 4)]}, 
+            ${['#1e40af', '#7c3aed', '#0891b2', '#059669'][Math.floor(Math.random() * 4)]})`,
+          animationDelay: `${Math.random() * 20}s`,
+          animationDuration: `${15 + Math.random() * 10}s`,
+        }}
+      />
+    ))}
+    {/* Medium floating particles */}
+    {[...Array(25)].map((_, i) => (
+      <div
+        key={`medium-${i}`}
+        className="particle-medium absolute rounded-full opacity-40"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          width: `${2 + Math.random() * 4}px`,
+          height: `${2 + Math.random() * 4}px`,
+          background: `radial-gradient(circle, 
+            ${['#60a5fa', '#a78bfa', '#22d3ee', '#34d399'][Math.floor(Math.random() * 4)]}, 
+            transparent)`,
+          animationDelay: `${Math.random() * 25}s`,
+          animationDuration: `${20 + Math.random() * 15}s`,
+        }}
+      />
+    ))}
+    {/* Small twinkling particles */}
+    {[...Array(40)].map((_, i) => (
+      <div
+        key={`small-${i}`}
+        className="particle-small absolute rounded-full"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          width: `${1 + Math.random() * 2}px`,
+          height: `${1 + Math.random() * 2}px`,
+          background: `${['#93c5fd', '#c4b5fd', '#67e8f9', '#6ee7b7'][Math.floor(Math.random() * 4)]}`,
+          animationDelay: `${Math.random() * 30}s`,
+          animationDuration: `${10 + Math.random() * 20}s`,
+        }}
+      />
+    ))}
+    {/* Connecting lines effect */}
+    {[...Array(8)].map((_, i) => (
+      <div
+        key={`line-${i}`}
+        className="particle-line absolute opacity-20"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          width: `${50 + Math.random() * 100}px`,
+          height: '1px',
+          background: `linear-gradient(90deg, transparent, 
+            ${['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981'][Math.floor(Math.random() * 4)]}, 
+            transparent)`,
+          transform: `rotate(${Math.random() * 360}deg)`,
+          animationDelay: `${Math.random() * 15}s`,
+          animationDuration: `${25 + Math.random() * 10}s`,
+        }}
+      />
+    ))}
+  </div>
 
-            {/* <h1 className="text-5xl md:text-7xl font-bold mb-4 animate-slide-up">
-              <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
-                Pranav Sharma
-              </span>
-            </h1> */}
-            <p
-              className="text-xl md:text-2xl text-gray-300 mb-6 animate-slide-up"
-              style={{ animationDelay: "0.2s" }}
-            >
-              AWS Certified Developer | DevOps Engineer | Audio Technology
-              Expert
-            </p>
-            <p
-              className="text-lg text-gray-400 max-w-2xl mx-auto mb-8 animate-slide-up"
-              style={{ animationDelay: "0.4s" }}
-            >
-              Bridging cloud engineering and acoustic science 
-              to drive innovation in scalable, efficient systems with
-              specialized expertise in spatial audio and DevOps automation.
-            </p>
-          </div>
+  <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+    <div className="mb-8 animate-fade-in">
+      <div className="profile-glow w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-110 hover:rotate-3">
+        <img
+          src="/profile-pic.png"
+          alt="Pranav Sharma"
+          className="w-full h-full object-cover"
+        />
+      </div>
 
-          <div
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 animate-slide-up"
-            style={{ animationDelay: "0.6s" }}
+      {/* Single typewriter headline */}
+      <p
+        className="text-xl md:text-2xl text-gray-300 mb-6 animate-slide-up"
+        style={{ animationDelay: "0.2s" }}
+      >
+        <TypeAnimation
+  sequence={[
+    'AWS Certified Developer | DevOps Engineer | Audio Technology Specialist',
+  ]}
+  wrapper="span"
+  speed={60}
+  style={{ display: 'inline-block' }}
+  repeat={0}
+/>
+      </p>
+
+      <p
+        className="text-lg text-gray-400 max-w-2xl mx-auto mb-8 animate-slide-up"
+        style={{ animationDelay: "0.4s" }}
+      >
+        Bridging cloud engineering and acoustic science 
+        to drive innovation in scalable, efficient systems with
+        specialized expertise in spatial audio and DevOps automation.
+      </p>
+    </div>
+
+    <div
+      className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 animate-slide-up"
+      style={{ animationDelay: "0.6s" }}
+    >
+      <a
+        href="mailto:pshar416@gmail.com"
+        className="hero-button flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25"
+      >
+        <Mail size={20} />
+        Get In Touch
+      </a>
+      <div className="flex gap-4">
+        <a
+          href="https://www.linkedin.com/in/pranav1010/"
+          className="p-3 border border-gray-600 hover:border-blue-400 rounded-lg transition-all duration-300 hover:bg-blue-400/10 transform hover:scale-110 hover:shadow-lg"
+        >
+          <Linkedin size={20} />
+        </a>
+        <a
+          href="https://github.com/Pshar10"
+          className="p-3 border border-gray-600 hover:border-emerald-400 rounded-lg transition-all duration-300 hover:bg-emerald-400/10 transform hover:scale-110 hover:shadow-lg"
+        >
+          <Github size={20} />
+        </a>
+        <a
+          href="/Pranav_Sharma_CV.pdf"
+          download
+          className="hero-button flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+            width={20}
+            height={20}
           >
-            <a
-              href="mailto:pshar416@gmail.com"
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25"
-            >
-              <Mail size={20} />
-              Get In Touch
-            </a>
-            <div className="flex gap-4">
-              <a
-                href="https://www.linkedin.com/in/pranav1010/"
-                className="p-3 border border-gray-600 hover:border-blue-400 rounded-lg transition-all duration-300 hover:bg-blue-400/10 transform hover:scale-110 hover:shadow-lg"
-              >
-                <Linkedin size={20} />
-              </a>
-              <a
-                href="https://github.com/Pshar10"
-                className="p-3 border border-gray-600 hover:border-emerald-400 rounded-lg transition-all duration-300 hover:bg-emerald-400/10 transform hover:scale-110 hover:shadow-lg"
-              >
-                <Github size={20} />
-              </a>
-              <a
-                href="/Pranav_Sharma_CV.pdf"
-                download
-                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  width={20}
-                  height={20}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
-                  />
-                </svg>
-                Download My CV
-              </a>
-            </div>
-          </div>
-
-          <div
-            className="animate-bounce-slow animate-slide-up"
-            style={{ animationDelay: "0.8s" }}
-          >
-            <ChevronDown
-              size={32}
-              className="mx-auto text-gray-400 cursor-pointer hover:text-white transition-colors duration-300"
-              onClick={() => scrollToSection("about")}
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
             />
-          </div>
-        </div>
-      </section>
+          </svg>
+          Download My CV
+        </a>
+      </div>
+    </div>
+
+    <div
+      className="animate-bounce-slow animate-slide-up"
+      style={{ animationDelay: "0.8s" }}
+    >
+      <ChevronDown
+        size={32}
+        className="mx-auto text-gray-400 cursor-pointer hover:text-white transition-colors duration-300"
+        onClick={() => scrollToSection("about")}
+      />
+    </div>
+  </div>
+</section>
+
 
       {/* About Section */}
       <section id="about" className="py-20 bg-gray-800">
@@ -668,13 +749,9 @@ function App() {
                   <div
                     key={index}
                     className={`
-                relative
-                bg-gray-700 p-6 rounded-lg hover:bg-gray-600
-                transition-all duration-200 transform
-                hover:scale-105
-                hover:shadow-[0_0_24px_8px_rgba(34,211,238,0.45)]
-                hover:shadow-blue-400/60
-                hover:ring-1 hover:ring-blue-400/20
+                relative glass-card p-6 rounded-lg
+                transition-all duration-300 transform
+                hover:scale-105 hover:shadow-2xl
                 ${
                   visibleElements.has("about-certs")
                     ? "opacity-100 translate-y-0"
@@ -725,16 +802,7 @@ function App() {
 
               return (
                 <div key={index} className="w-full sm:w-1/2 lg:w-1/3 px-4 mb-8">
-                  <div
-                    className="
-                flex flex-col rounded-2xl bg-white/10 backdrop-blur-lg shadow-lg
-                transition-all duration-200
-                hover:shadow-[0_0_24px_8px_rgba(34,211,238,0.45)]
-                hover:shadow-blue-400/60
-                hover:scale-[1.03]
-                transform
-              "
-                  >
+                  <div className="skill-card glass-card flex flex-col rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
                     {/* Card Header */}
                     <button
                       onClick={() => toggleCard(index)}
@@ -744,42 +812,34 @@ function App() {
                         <span className="text-2xl">{category.emoji}</span>
                         {category.title}
                       </span>
-                      <span className="text-white">
-                        {isOpen ? <FaChevronUp /> : <FaChevronDown />}
-                      </span>
+                      <span className={`arrow-icon ${isOpen ? "rotated" : ""}`}>
+  {isOpen ? <FaChevronUp /> : <FaChevronDown />}
+</span>
+
                     </button>
 
                     {/* Dropdown Content */}
                     <div
-                      ref={(el) => (dropdownRefs.current[index] = el)}
                       style={{
-                        maxHeight: isOpen ? 1000 : 0,
+                        maxHeight: isOpen ? "500px" : "0px",
                         opacity: isOpen ? 1 : 0,
                         paddingTop: isOpen ? "16px" : "0px",
-                        paddingBottom: isOpen ? "16px" : "0px",
+                        paddingBottom: isOpen ? "24px" : "0px",
                         overflow: "hidden",
-                        transition:
-                          "max-height 1s cubic-bezier(.25,.8,.25,1), opacity 0.7s, padding 0.7s",
+                        transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
                       }}
                       className="px-6"
                     >
-                      {isOpen && (
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          {category.skills.map((skill, idx) => (
-                            <div
-                              key={idx}
-                              className="rounded-lg text-center py-2 px-3 shadow-md text-white bg-white/10 hover:bg-gradient-to-r from-blue-400 to-emerald-400 hover:text-white transform hover:scale-105 transition-all duration-200"
-                              style={{
-                                animation: "fadeUp 0.25s ease-out forwards",
-                                animationDelay: `${idx * 30}ms`,
-                                opacity: 0,
-                              }}
-                            >
-                              {skill}
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        {category.skills.map((skill, idx) => (
+                          <div
+                            key={idx}
+                            className="skill-tag rounded-lg text-center py-2 px-3 shadow-md text-white bg-white/10 hover:bg-gradient-to-r from-blue-400 to-emerald-400 hover:text-white transform hover:scale-105 transition-all duration-200"
+                          >
+                            {skill}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -789,137 +849,115 @@ function App() {
         </div>
       </section>
 
-      <section id="experience" className="py-20 bg-gray-800">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12" id="experience-header">
-            <h2
-              className={`text-4xl font-bold mb-4 text-white transition-all duration-1000 ${
-                visibleElements.has("experience-header")
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              }`}
+<section id="experience" className="py-20 bg-gray-800">
+  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="text-center mb-12" id="experience-header">
+      <h2
+        className={`text-4xl font-bold mb-4 text-white transition-all duration-1000 ${
+          visibleElements.has("experience-header")
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-8"
+        }`}
+      >
+        Professional Experience
+      </h2>
+      <div
+        className={`w-24 h-1 bg-gradient-to-r from-blue-400 to-emerald-400 mx-auto transition-all duration-1000 delay-200 ${
+          visibleElements.has("experience-header")
+            ? "opacity-100 scale-x-100"
+            : "opacity-0 scale-x-0"
+        }`}
+      ></div>
+    </div>
+    <div className="flex flex-wrap -mx-4" id="experience-list">
+      {experience.map((exp, index) => {
+  const isOpen = openExp === index;
+  const isCollapsing = collapsingIndex === index;
+  const showDropdown = isOpen || isCollapsing;
+  const topHighlights = exp.highlights.slice(0, 4);
+  const remainingHighlights = exp.highlights.slice(4);
+
+  return (
+    <div key={index} className="w-full sm:w-1/2 px-4 mb-8">
+      <div className="experience-card glass-card flex flex-col rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+        {/* ... header ... */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 px-6 pt-6">
+          <div>
+            <h3 className="text-2xl font-bold text-white mb-1">{exp.title}</h3>
+            <p className="text-blue-400 font-semibold text-lg">{exp.company}</p>
+          </div>
+          <div className="text-gray-400 mt-2 md:mt-0">
+            <div className="flex items-center gap-2 mb-1">
+              <Calendar size={16} />
+              <span>{exp.period}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin size={16} />
+              <span>{exp.location}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Always show first 4 points */}
+        <div className="px-6 pt-0 pb-2">
+          <div className="space-y-3">
+            {topHighlights.map((highlight, hIndex) => (
+              <div key={hIndex} className="flex items-start gap-3 group">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full mt-2 flex-shrink-0 group-hover:scale-150 transition-transform duration-300"></div>
+                <p className="text-gray-300 transition-colors duration-300 group-hover:text-white leading-relaxed">{highlight}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Animated dropdown for remaining highlights */}
+        <div
+          style={{
+            maxHeight: showDropdown ? "800px" : "0px",
+            opacity: showDropdown ? 1 : 0,
+            overflow: "hidden",
+            transition: "max-height 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.2s",
+            paddingLeft: showDropdown && remainingHighlights.length > 0 ? "24px" : "0px",
+            paddingRight: showDropdown && remainingHighlights.length > 0 ? "24px" : "0px",
+            paddingTop: showDropdown && remainingHighlights.length > 0 ? "12px" : "0px",
+            paddingBottom: showDropdown && remainingHighlights.length > 0 ? "12px" : "0px",
+          }}
+        >
+          <div className="space-y-3">
+            {remainingHighlights.map((highlight, hIndex) => (
+              <div key={hIndex} className="flex items-start gap-3 group">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full mt-2 flex-shrink-0 group-hover:scale-150 transition-transform duration-300"></div>
+                <p className="text-gray-300 transition-colors duration-300 group-hover:text-white leading-relaxed">{highlight}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {remainingHighlights.length > 0 && (
+          <div className="flex justify-center pt-2 pb-4">
+            <button
+              ref={(el) => (arrowRefs.current[index] = el)}
+              onClick={() => handleExpToggle(index, isOpen)}
+              className="mt-2 flex items-center text-blue-400 hover:text-white transition-all duration-300 focus:outline-none transform hover:scale-110"
+              aria-label={isOpen ? "Collapse details" : "Expand details"}
             >
-              Professional Experience
-            </h2>
-            <div
-              className={`w-24 h-1 bg-gradient-to-r from-blue-400 to-emerald-400 mx-auto transition-all duration-1000 delay-200 ${
-                visibleElements.has("experience-header")
-                  ? "opacity-100 scale-x-100"
-                  : "opacity-0 scale-x-0"
-              }`}
-            ></div>
+              {isOpen ? (
+                <FaChevronUp size={28} />
+              ) : (
+                <FaChevronDown size={28} />
+              )}
+            </button>
           </div>
+        )}
+      </div>
+    </div>
+  );
+})}
 
-          <div className="flex flex-wrap -mx-4" id="experience-list">
-            {experience.map((exp, index) => {
-              const isOpen = openExp === index;
-              return (
-                <div key={index} className="w-full sm:w-1/2 px-4 mb-8">
-                  <div
-                    className="
-                flex flex-col rounded-2xl bg-gray-700 shadow-lg
-                transition-all duration-200
-                hover:shadow-[0_0_24px_8px_rgba(34,211,238,0.45)]
-                hover:shadow-blue-400/60
-                hover:scale-[1.03]
-                transform
-              "
-                  >
-                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 px-6 pt-6">
-                      <div>
-                        <h3 className="text-2xl font-bold text-white mb-1">
-                          {exp.title}
-                        </h3>
-                        <p className="text-blue-400 font-semibold text-lg">
-                          {exp.company}
-                        </p>
-                      </div>
-                      <div className="text-gray-400 mt-2 md:mt-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Calendar size={16} />
-                          <span>{exp.period}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin size={16} />
-                          <span>{exp.location}</span>
-                        </div>
-                      </div>
-                    </div>
+    </div>
+  </div>
+</section>
 
-                    {/* Dropdown Content: Only show when open */}
-                    <div
-                      style={{
-                        maxHeight: isOpen ? 1000 : 0,
-                        opacity: isOpen ? 1 : 0,
-                        paddingTop: isOpen ? "16px" : "0px",
-                        paddingBottom: isOpen ? "16px" : "0px",
-                        overflow: "hidden",
-                        transition:
-                          "max-height 1.2s cubic-bezier(.25,.8,.25,1), opacity 0.7s, padding 0.7s",
-                      }}
-                      className="px-6"
-                    >
-                      <div className="space-y-3">
-                        {isOpen &&
-                          exp.highlights.map((highlight, hIndex) => (
-                            <div
-                              key={hIndex}
-                              className="flex items-start gap-3 group"
-                            >
-                              <div className="w-2 h-2 bg-emerald-400 rounded-full mt-2 flex-shrink-0 group-hover:scale-150 transition-transform duration-300"></div>
-                              <p className="text-gray-300 transition-colors duration-300 group-hover:text-white leading-relaxed">
-                                {highlight}
-                              </p>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-
-                    {/* Show top 4 points always, even when closed */}
-                    {!isOpen && (
-                      <div className="px-6 pb-2">
-                        <div className="space-y-3">
-                          {exp.highlights
-                            .slice(0, 4)
-                            .map((highlight, hIndex) => (
-                              <div
-                                key={hIndex}
-                                className="flex items-start gap-3 group"
-                              >
-                                <div className="w-2 h-2 bg-emerald-400 rounded-full mt-2 flex-shrink-0 group-hover:scale-150 transition-transform duration-300"></div>
-                                <p className="text-gray-300 transition-colors duration-300 group-hover:text-white leading-relaxed">
-                                  {highlight}
-                                </p>
-                              </div>
-                            ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Arrow button at bottom */}
-                    <div className="flex justify-center pb-4">
-                      <button
-                        ref={(el) => (arrowRefs.current[index] = el)}
-                        onClick={() => handleExpToggle(index, isOpen)}
-                        className="mt-2 flex items-center text-blue-400 hover:text-white transition-all duration-300 focus:outline-none"
-                        aria-label={
-                          isOpen ? "Collapse details" : "Expand details"
-                        }
-                      >
-                        {isOpen ? (
-                          <FaChevronUp size={28} />
-                        ) : (
-                          <FaChevronDown size={28} />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
       <section id="projects" className="py-20 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -947,16 +985,7 @@ function App() {
               const isOpen = !!openProjects[index];
               return (
                 <div key={index} className="w-full sm:w-1/2 lg:w-1/3 px-4 mb-8">
-                  <div
-                    className="
-                flex flex-col rounded-2xl bg-gray-800 shadow-lg
-                transition-all duration-200
-                hover:shadow-[0_0_24px_8px_rgba(34,211,238,0.45)]
-                hover:shadow-blue-400/60
-                hover:scale-[1.03]
-                transform
-              "
-                  >
+                  <div className="project-card glass-card flex flex-col rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
                     {/* Card Header */}
                     <div className="w-full px-6 py-5 flex flex-col gap-2">
                       <div>
@@ -971,13 +1000,11 @@ function App() {
 
                     {/* Dropdown Content */}
                     <div
-                      ref={(el) => (projectsDropdownRefs.current[index] = el)}
                       style={{
-                        maxHeight: isOpen ? 1000 : 0,
+                        maxHeight: isOpen ? "500px" : "0px",
                         opacity: isOpen ? 1 : 0,
                         overflow: "hidden",
-                        transition:
-                          "max-height 0.35s cubic-bezier(.25,.8,.25,1), opacity 0.3s",
+                        transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
                       }}
                     >
                       {isOpen && (
@@ -989,7 +1016,7 @@ function App() {
                             {project.technologies.map((tech, techIndex) => (
                               <span
                                 key={techIndex}
-                                className="flex items-center px-3 py-1 bg-gray-700 text-sm rounded-full text-gray-300"
+                                className="skill-tag flex items-center px-3 py-1 bg-gray-700 text-sm rounded-full text-gray-300 hover:bg-gradient-to-r from-blue-400 to-emerald-400 hover:text-white transition-all duration-200"
                               >
                                 {tech}
                               </span>
@@ -997,7 +1024,7 @@ function App() {
                           </div>
                           <a
                             href={project.github}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded bg-blue-600 hover:bg-emerald-500 transition-all duration-300 text-white font-semibold shadow-md"
+                            className="glass-button inline-flex items-center gap-2 px-4 py-2 rounded transition-all duration-300 text-white font-semibold shadow-md hover:scale-105"
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -1020,7 +1047,7 @@ function App() {
                     <div className="flex justify-center pb-4">
                       <button
                         onClick={() => toggleProjectCard(index)}
-                        className="mt-2 flex items-center text-blue-400 hover:text-white transition-all duration-300 focus:outline-none"
+                        className="mt-2 flex items-center text-blue-400 hover:text-white transition-all duration-300 focus:outline-none transform hover:scale-110"
                         aria-label={
                           isOpen ? "Collapse details" : "Expand details"
                         }
@@ -1042,25 +1069,36 @@ function App() {
           <div className="flex justify-center mt-6">
             {!showAllProjects && projects.length > initialVisibleCount && (
               <button
-                className="px-8 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white text-lg font-bold shadow-lg transition-all duration-300 flex items-center gap-2"
+                className="glass-button px-8 py-3 rounded-lg text-white text-lg font-bold shadow-lg transition-all duration-500 flex items-center gap-2 transform hover:scale-105 hover:shadow-2xl"
                 onClick={() => setShowAllProjects(true)}
+                style={{
+                  background: "linear-gradient(45deg, #3b82f6, #10b981)",
+                  backgroundSize: "200% 200%",
+                  animation: "gradient-x 3s ease infinite",
+                }}
               >
-                Show All Projects <FaChevronDown />
+                Show All Projects 
+                <FaChevronDown className="transition-transform duration-300 group-hover:translate-y-1" />
               </button>
             )}
             {showAllProjects && projects.length > initialVisibleCount && (
               <button
-                className="px-8 py-3 rounded-lg bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white text-lg font-bold shadow-lg transition-all duration-300 flex items-center gap-2"
+                className="glass-button px-8 py-3 rounded-lg text-white text-lg font-bold shadow-lg transition-all duration-500 flex items-center gap-2 transform hover:scale-105 hover:shadow-2xl"
                 onClick={() => setShowAllProjects(false)}
+                style={{
+                  background: "linear-gradient(45deg, #10b981, #3b82f6)",
+                  backgroundSize: "200% 200%",
+                  animation: "gradient-x 3s ease infinite",
+                }}
               >
-                Show Less <FaChevronUp />
+                Show Less 
+                <FaChevronUp className="transition-transform duration-300 group-hover:-translate-y-1" />
               </button>
             )}
           </div>
         </div>
       </section>
 
-      {/* Contact Section */}
       {/* Contact Section */}
       <section id="contact" className="py-20 bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -1122,11 +1160,9 @@ function App() {
                 key={index}
                 href={contact.href}
                 className={`
-            flex flex-col items-center p-6 bg-gray-700 rounded-lg
-            transition-all duration-100 group transform
-            hover:scale-105
-            hover:shadow-[0_0_24px_8px_rgba(34,211,238,0.45)]
-            hover:shadow-blue-400/60
+            glass-card flex flex-col items-center p-6 rounded-lg
+            transition-all duration-300 group transform
+            hover:scale-105 hover:shadow-2xl
             ${
               visibleElements.has("contact-cards")
                 ? "opacity-100 translate-y-0"
@@ -1138,13 +1174,13 @@ function App() {
                 rel="noopener noreferrer"
               >
                 <contact.icon
-                  className={`text-${contact.color}-400 group-hover:text-${contact.color}-300 mb-3 transition-all duration-100 transform group-hover:scale-110`}
+                  className={`text-${contact.color}-400 group-hover:text-${contact.color}-300 mb-3 transition-all duration-300 transform group-hover:scale-110 group-hover:rotate-12`}
                   size={32}
                 />
-                <h3 className="font-semibold mb-2 text-white group-hover:text-white transition-colors duration-100">
+                <h3 className="font-semibold mb-2 text-white group-hover:text-white transition-colors duration-300">
                   {contact.title}
                 </h3>
-                <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-100">
+                <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
                   {contact.subtitle}
                 </p>
               </a>
