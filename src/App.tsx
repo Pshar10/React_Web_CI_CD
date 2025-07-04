@@ -19,6 +19,33 @@ import {
   ArrowUp,
 } from "lucide-react";
 
+
+function smoothScrollTo(targetY: number, duration: number = 150) {
+  const startY = window.scrollY;
+  const distance = targetY - startY;
+  let startTime: number | null = null;
+
+  function step(timestamp: number) {
+    if (!startTime) startTime = timestamp;
+    const progress = Math.min((timestamp - startTime) / duration, 1);
+
+    const easeInOut = progress < 0.5
+      ? 2 * progress * progress
+      : -1 + (4 - 2 * progress) * progress;
+
+    window.scrollTo(0, startY + distance * easeInOut);
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
+
+
+
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
@@ -351,19 +378,46 @@ function App() {
   const arrowRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [collapsingIndex, setCollapsingIndex] = useState<number | null>(null);
 
-
-  const handleExpToggle = (index: number, isOpen: boolean) => {
+const handleExpToggle = (index: number, isOpen: boolean) => {
   if (isOpen) {
-    setCollapsingIndex(index);      // Start collapsing animation
+    // Start collapse
+    setCollapsingIndex(index);
+
     setTimeout(() => {
-      setOpenExp(null);             // Fully close after animation
+      setOpenExp(null);
       setCollapsingIndex(null);
-      // scrollIntoView logic, if any, here
-    }, 300); // Match your CSS transition time (ms)
+
+      // Wait for layout reflow
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const arrowEl = arrowRefs.current[index];
+          if (arrowEl) {
+            const rect = arrowEl.getBoundingClientRect();
+            const scrollTop =
+              window.pageYOffset || document.documentElement.scrollTop;
+            const offsetTop = rect.top + scrollTop;
+
+            smoothScrollTo(offsetTop - 450, 50); // fast scroll to arrow
+          }
+        });
+      });
+    }, 300);
   } else {
+    // Open card
     setOpenExp(index);
+
+    setTimeout(() => {
+      const el = document.getElementById(`exp-card-${index}`);
+      if (el) {
+        el.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 310);
   }
 };
+
 
 
 
@@ -849,7 +903,7 @@ function App() {
         </div>
       </section>
 
-<section id="experience" className="py-20 bg-gray-800">
+<section id="experience" className="py-20 pb-40 bg-gray-800">
   <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="text-center mb-12" id="experience-header">
       <h2
@@ -912,16 +966,17 @@ function App() {
 
         {/* Animated dropdown for remaining highlights */}
         <div
-          style={{
-            maxHeight: showDropdown ? "800px" : "0px",
-            opacity: showDropdown ? 1 : 0,
-            overflow: "hidden",
-            transition: "max-height 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.2s",
-            paddingLeft: showDropdown && remainingHighlights.length > 0 ? "24px" : "0px",
-            paddingRight: showDropdown && remainingHighlights.length > 0 ? "24px" : "0px",
-            paddingTop: showDropdown && remainingHighlights.length > 0 ? "12px" : "0px",
-            paddingBottom: showDropdown && remainingHighlights.length > 0 ? "12px" : "0px",
-          }}
+style={{
+  height: showDropdown ? "auto" : "0px",
+  opacity: showDropdown ? 1 : 0,
+  overflow: "hidden",
+  transition: "opacity 0.2s ease, padding 0.4s ease",
+  paddingLeft: showDropdown && remainingHighlights.length > 0 ? "24px" : "0px",
+  paddingRight: showDropdown && remainingHighlights.length > 0 ? "24px" : "0px",
+  paddingTop: showDropdown && remainingHighlights.length > 0 ? "12px" : "0px",
+  paddingBottom: showDropdown && remainingHighlights.length > 0 ? "12px" : "0px",
+}}
+
         >
           <div className="space-y-3">
             {remainingHighlights.map((highlight, hIndex) => (
