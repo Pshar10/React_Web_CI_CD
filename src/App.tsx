@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { TypeAnimation } from 'react-type-animation';
-
-
+import { TypeAnimation } from "react-type-animation";
 
 import {
   Github,
@@ -19,7 +17,6 @@ import {
   ArrowUp,
 } from "lucide-react";
 
-
 function smoothScrollTo(targetY: number, duration: number = 150) {
   const startY = window.scrollY;
   const distance = targetY - startY;
@@ -29,9 +26,10 @@ function smoothScrollTo(targetY: number, duration: number = 150) {
     if (!startTime) startTime = timestamp;
     const progress = Math.min((timestamp - startTime) / duration, 1);
 
-    const easeInOut = progress < 0.5
-      ? 2 * progress * progress
-      : -1 + (4 - 2 * progress) * progress;
+    const easeInOut =
+      progress < 0.5
+        ? 2 * progress * progress
+        : -1 + (4 - 2 * progress) * progress;
 
     window.scrollTo(0, startY + distance * easeInOut);
 
@@ -42,9 +40,6 @@ function smoothScrollTo(targetY: number, duration: number = 150) {
 
   requestAnimationFrame(step);
 }
-
-
-
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -378,48 +373,45 @@ function App() {
   const arrowRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [collapsingIndex, setCollapsingIndex] = useState<number | null>(null);
 
-const handleExpToggle = (index: number, isOpen: boolean) => {
-  if (isOpen) {
-    // Start collapse
-    setCollapsingIndex(index);
+  const handleExpToggle = (index: number, isOpen: boolean) => {
+    if (isOpen) {
+      // Start collapse
+      setCollapsingIndex(index);
 
-    setTimeout(() => {
-      setOpenExp(null);
-      setCollapsingIndex(null);
+      setTimeout(() => {
+        setOpenExp(null);
+        setCollapsingIndex(null);
 
-      // Wait for layout reflow
-      requestAnimationFrame(() => {
+        // Wait for layout reflow
         requestAnimationFrame(() => {
-          const arrowEl = arrowRefs.current[index];
-          if (arrowEl) {
-            const rect = arrowEl.getBoundingClientRect();
-            const scrollTop =
-              window.pageYOffset || document.documentElement.scrollTop;
-            const offsetTop = rect.top + scrollTop;
+          requestAnimationFrame(() => {
+            const arrowEl = arrowRefs.current[index];
+            if (arrowEl) {
+              const rect = arrowEl.getBoundingClientRect();
+              const scrollTop =
+                window.pageYOffset || document.documentElement.scrollTop;
+              const offsetTop = rect.top + scrollTop;
 
-            smoothScrollTo(offsetTop - 450, 50); // fast scroll to arrow
-          }
+              smoothScrollTo(offsetTop - 450, 50); // fast scroll to arrow
+            }
+          });
         });
-      });
-    }, 300);
-  } else {
-    // Open card
-    setOpenExp(index);
+      }, 300);
+    } else {
+      // Open card
+      setOpenExp(index);
 
-    setTimeout(() => {
-      const el = document.getElementById(`exp-card-${index}`);
-      if (el) {
-        el.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    }, 310);
-  }
-};
-
-
-
+      setTimeout(() => {
+        const el = document.getElementById(`exp-card-${index}`);
+        if (el) {
+          el.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }, 310);
+    }
+  };
 
   const initialVisibleCount = 6; // Show this many cards initially
 
@@ -549,185 +541,204 @@ const handleExpToggle = (index: number, isOpen: boolean) => {
       </nav>
 
       {/* Hero Section with Particle Effect */}
-     <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-900 pt-32">
-  {/* Animated Background Gradient */}
-  <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-emerald-900/20"></div>
-  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]"></div>
+      <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-900 pt-32">
+        {/* Animated Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-emerald-900/20"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]"></div>
 
-  {/* Floating Particles */}
-  <div className="particles-container absolute inset-0 overflow-hidden pointer-events-none">
-    {/* Large floating particles */}
-    {[...Array(15)].map((_, i) => (
-      <div
-        key={`large-${i}`}
-        className="particle-large absolute rounded-full opacity-60"
-        style={{
-          left: `${Math.random() * 100}%`,
-          top: `${Math.random() * 100}%`,
-          width: `${4 + Math.random() * 8}px`,
-          height: `${4 + Math.random() * 8}px`,
-          background: `linear-gradient(45deg, 
-            ${['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981'][Math.floor(Math.random() * 4)]}, 
-            ${['#1e40af', '#7c3aed', '#0891b2', '#059669'][Math.floor(Math.random() * 4)]})`,
-          animationDelay: `${Math.random() * 20}s`,
-          animationDuration: `${15 + Math.random() * 10}s`,
-        }}
-      />
-    ))}
-    {/* Medium floating particles */}
-    {[...Array(25)].map((_, i) => (
-      <div
-        key={`medium-${i}`}
-        className="particle-medium absolute rounded-full opacity-40"
-        style={{
-          left: `${Math.random() * 100}%`,
-          top: `${Math.random() * 100}%`,
-          width: `${2 + Math.random() * 4}px`,
-          height: `${2 + Math.random() * 4}px`,
-          background: `radial-gradient(circle, 
-            ${['#60a5fa', '#a78bfa', '#22d3ee', '#34d399'][Math.floor(Math.random() * 4)]}, 
-            transparent)`,
-          animationDelay: `${Math.random() * 25}s`,
-          animationDuration: `${20 + Math.random() * 15}s`,
-        }}
-      />
-    ))}
-    {/* Small twinkling particles */}
-    {[...Array(40)].map((_, i) => (
-      <div
-        key={`small-${i}`}
-        className="particle-small absolute rounded-full"
-        style={{
-          left: `${Math.random() * 100}%`,
-          top: `${Math.random() * 100}%`,
-          width: `${1 + Math.random() * 2}px`,
-          height: `${1 + Math.random() * 2}px`,
-          background: `${['#93c5fd', '#c4b5fd', '#67e8f9', '#6ee7b7'][Math.floor(Math.random() * 4)]}`,
-          animationDelay: `${Math.random() * 30}s`,
-          animationDuration: `${10 + Math.random() * 20}s`,
-        }}
-      />
-    ))}
-    {/* Connecting lines effect */}
-    {[...Array(8)].map((_, i) => (
-      <div
-        key={`line-${i}`}
-        className="particle-line absolute opacity-20"
-        style={{
-          left: `${Math.random() * 100}%`,
-          top: `${Math.random() * 100}%`,
-          width: `${50 + Math.random() * 100}px`,
-          height: '1px',
-          background: `linear-gradient(90deg, transparent, 
-            ${['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981'][Math.floor(Math.random() * 4)]}, 
-            transparent)`,
-          transform: `rotate(${Math.random() * 360}deg)`,
-          animationDelay: `${Math.random() * 15}s`,
-          animationDuration: `${25 + Math.random() * 10}s`,
-        }}
-      />
-    ))}
-  </div>
-
-  <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-    <div className="mb-8 animate-fade-in">
-      <div className="profile-glow w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-110 hover:rotate-3">
-        <img
-          src="/profile-pic.png"
-          alt="Pranav Sharma"
-          className="w-full h-full object-cover"
-        />
-      </div>
-
-      {/* Single typewriter headline */}
-      <p
-        className="text-xl md:text-2xl text-gray-300 mb-6 animate-slide-up"
-        style={{ animationDelay: "0.2s" }}
-      >
-        <TypeAnimation
-  sequence={[
-    'AWS Certified Developer | DevOps Engineer | Audio Technology Specialist',
-  ]}
-  wrapper="span"
-  speed={60}
-  style={{ display: 'inline-block' }}
-  repeat={0}
-/>
-      </p>
-
-      <p
-        className="text-lg text-gray-400 max-w-2xl mx-auto mb-8 animate-slide-up"
-        style={{ animationDelay: "0.4s" }}
-      >
-        Bridging cloud engineering and acoustic science 
-        to drive innovation in scalable, efficient systems with
-        specialized expertise in spatial audio and DevOps automation.
-      </p>
-    </div>
-
-    <div
-      className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 animate-slide-up"
-      style={{ animationDelay: "0.6s" }}
-    >
-      <a
-        href="mailto:pshar416@gmail.com"
-        className="hero-button flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25"
-      >
-        <Mail size={20} />
-        Get In Touch
-      </a>
-      <div className="flex gap-4">
-        <a
-          href="https://www.linkedin.com/in/pranav1010/"
-          className="p-3 border border-gray-600 hover:border-blue-400 rounded-lg transition-all duration-300 hover:bg-blue-400/10 transform hover:scale-110 hover:shadow-lg"
-        >
-          <Linkedin size={20} />
-        </a>
-        <a
-          href="https://github.com/Pshar10"
-          className="p-3 border border-gray-600 hover:border-emerald-400 rounded-lg transition-all duration-300 hover:bg-emerald-400/10 transform hover:scale-110 hover:shadow-lg"
-        >
-          <Github size={20} />
-        </a>
-        <a
-          href="/Pranav_Sharma_CV.pdf"
-          download
-          className="hero-button flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="text-white"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-            width={20}
-            height={20}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
+        {/* Floating Particles */}
+        <div className="particles-container absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Large floating particles */}
+          {[...Array(15)].map((_, i) => (
+            <div
+              key={`large-${i}`}
+              className="particle-large absolute rounded-full opacity-60"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                width: `${4 + Math.random() * 8}px`,
+                height: `${4 + Math.random() * 8}px`,
+                background: `linear-gradient(45deg, 
+            ${
+              ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981"][
+                Math.floor(Math.random() * 4)
+              ]
+            }, 
+            ${
+              ["#1e40af", "#7c3aed", "#0891b2", "#059669"][
+                Math.floor(Math.random() * 4)
+              ]
+            })`,
+                animationDelay: `${Math.random() * 20}s`,
+                animationDuration: `${15 + Math.random() * 10}s`,
+              }}
             />
-          </svg>
-          Download My CV
-        </a>
-      </div>
-    </div>
+          ))}
+          {/* Medium floating particles */}
+          {[...Array(25)].map((_, i) => (
+            <div
+              key={`medium-${i}`}
+              className="particle-medium absolute rounded-full opacity-40"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                width: `${2 + Math.random() * 4}px`,
+                height: `${2 + Math.random() * 4}px`,
+                background: `radial-gradient(circle, 
+            ${
+              ["#60a5fa", "#a78bfa", "#22d3ee", "#34d399"][
+                Math.floor(Math.random() * 4)
+              ]
+            }, 
+            transparent)`,
+                animationDelay: `${Math.random() * 25}s`,
+                animationDuration: `${20 + Math.random() * 15}s`,
+              }}
+            />
+          ))}
+          {/* Small twinkling particles */}
+          {[...Array(40)].map((_, i) => (
+            <div
+              key={`small-${i}`}
+              className="particle-small absolute rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                width: `${1 + Math.random() * 2}px`,
+                height: `${1 + Math.random() * 2}px`,
+                background: `${
+                  ["#93c5fd", "#c4b5fd", "#67e8f9", "#6ee7b7"][
+                    Math.floor(Math.random() * 4)
+                  ]
+                }`,
+                animationDelay: `${Math.random() * 30}s`,
+                animationDuration: `${10 + Math.random() * 20}s`,
+              }}
+            />
+          ))}
+          {/* Connecting lines effect */}
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={`line-${i}`}
+              className="particle-line absolute opacity-20"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                width: `${50 + Math.random() * 100}px`,
+                height: "1px",
+                background: `linear-gradient(90deg, transparent, 
+            ${
+              ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981"][
+                Math.floor(Math.random() * 4)
+              ]
+            }, 
+            transparent)`,
+                transform: `rotate(${Math.random() * 360}deg)`,
+                animationDelay: `${Math.random() * 15}s`,
+                animationDuration: `${25 + Math.random() * 10}s`,
+              }}
+            />
+          ))}
+        </div>
 
-    <div
-      className="animate-bounce-slow animate-slide-up"
-      style={{ animationDelay: "0.8s" }}
-    >
-      <ChevronDown
-        size={32}
-        className="mx-auto text-gray-400 cursor-pointer hover:text-white transition-colors duration-300"
-        onClick={() => scrollToSection("about")}
-      />
-    </div>
-  </div>
-</section>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <div className="mb-8 animate-fade-in">
+            <div className="profile-glow w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-110 hover:rotate-3">
+              <img
+                src="/profile-pic.png"
+                alt="Pranav Sharma"
+                className="w-full h-full object-cover"
+              />
+            </div>
 
+            {/* Single typewriter headline */}
+            <p
+              className="text-xl md:text-2xl text-gray-300 mb-6 animate-slide-up"
+              style={{ animationDelay: "0.2s" }}
+            >
+              <TypeAnimation
+                sequence={[
+                  "AWS Certified Developer | DevOps Engineer | Audio Technology Specialist",
+                ]}
+                wrapper="span"
+                speed={60}
+                style={{ display: "inline-block" }}
+                repeat={0}
+              />
+            </p>
+
+            <p
+              className="text-lg text-gray-400 max-w-2xl mx-auto mb-8 animate-slide-up"
+              style={{ animationDelay: "0.4s" }}
+            >
+              Bridging cloud engineering and acoustic science to drive
+              innovation in scalable, efficient systems with specialized
+              expertise in spatial audio and DevOps automation.
+            </p>
+          </div>
+
+          <div
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 animate-slide-up"
+            style={{ animationDelay: "0.6s" }}
+          >
+            <a
+              href="mailto:pshar416@gmail.com"
+              className="hero-button flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25"
+            >
+              <Mail size={20} />
+              Get In Touch
+            </a>
+            <div className="flex gap-4">
+              <a
+                href="https://www.linkedin.com/in/pranav1010/"
+                className="p-3 border border-gray-600 hover:border-blue-400 rounded-lg transition-all duration-300 hover:bg-blue-400/10 transform hover:scale-110 hover:shadow-lg"
+              >
+                <Linkedin size={20} />
+              </a>
+              <a
+                href="https://github.com/Pshar10"
+                className="p-3 border border-gray-600 hover:border-emerald-400 rounded-lg transition-all duration-300 hover:bg-emerald-400/10 transform hover:scale-110 hover:shadow-lg"
+              >
+                <Github size={20} />
+              </a>
+              <a
+                href="/Pranav_Sharma_CV.pdf"
+                download
+                className="hero-button flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  width={20}
+                  height={20}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
+                  />
+                </svg>
+                Download My CV
+              </a>
+            </div>
+          </div>
+
+          <div
+            className="animate-bounce-slow animate-slide-up"
+            style={{ animationDelay: "0.8s" }}
+          >
+            <ChevronDown
+              size={32}
+              className="mx-auto text-gray-400 cursor-pointer hover:text-white transition-colors duration-300"
+              onClick={() => scrollToSection("about")}
+            />
+          </div>
+        </div>
+      </section>
 
       {/* About Section */}
       <section id="about" className="py-20 bg-gray-800">
@@ -867,9 +878,8 @@ const handleExpToggle = (index: number, isOpen: boolean) => {
                         {category.title}
                       </span>
                       <span className={`arrow-icon ${isOpen ? "rotated" : ""}`}>
-  {isOpen ? <FaChevronUp /> : <FaChevronDown />}
-</span>
-
+                        {isOpen ? <FaChevronUp /> : <FaChevronDown />}
+                      </span>
                     </button>
 
                     {/* Dropdown Content */}
@@ -903,116 +913,141 @@ const handleExpToggle = (index: number, isOpen: boolean) => {
         </div>
       </section>
 
-<section id="experience" className="py-20 pb-40 bg-gray-800">
-  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="text-center mb-12" id="experience-header">
-      <h2
-        className={`text-4xl font-bold mb-4 text-white transition-all duration-1000 ${
-          visibleElements.has("experience-header")
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-8"
-        }`}
-      >
-        Professional Experience
-      </h2>
-      <div
-        className={`w-24 h-1 bg-gradient-to-r from-blue-400 to-emerald-400 mx-auto transition-all duration-1000 delay-200 ${
-          visibleElements.has("experience-header")
-            ? "opacity-100 scale-x-100"
-            : "opacity-0 scale-x-0"
-        }`}
-      ></div>
-    </div>
-    <div className="flex flex-wrap -mx-4" id="experience-list">
-      {experience.map((exp, index) => {
-  const isOpen = openExp === index;
-  const isCollapsing = collapsingIndex === index;
-  const showDropdown = isOpen || isCollapsing;
-  const topHighlights = exp.highlights.slice(0, 4);
-  const remainingHighlights = exp.highlights.slice(4);
-
-  return (
-    <div key={index} className="w-full sm:w-1/2 px-4 mb-8">
-      <div className="experience-card glass-card flex flex-col rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
-        {/* ... header ... */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 px-6 pt-6">
-          <div>
-            <h3 className="text-2xl font-bold text-white mb-1">{exp.title}</h3>
-            <p className="text-blue-400 font-semibold text-lg">{exp.company}</p>
-          </div>
-          <div className="text-gray-400 mt-2 md:mt-0">
-            <div className="flex items-center gap-2 mb-1">
-              <Calendar size={16} />
-              <span>{exp.period}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin size={16} />
-              <span>{exp.location}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Always show first 4 points */}
-        <div className="px-6 pt-0 pb-2">
-          <div className="space-y-3">
-            {topHighlights.map((highlight, hIndex) => (
-              <div key={hIndex} className="flex items-start gap-3 group">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full mt-2 flex-shrink-0 group-hover:scale-150 transition-transform duration-300"></div>
-                <p className="text-gray-300 transition-colors duration-300 group-hover:text-white leading-relaxed">{highlight}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Animated dropdown for remaining highlights */}
-        <div
-style={{
-  height: showDropdown ? "auto" : "0px",
-  opacity: showDropdown ? 1 : 0,
-  overflow: "hidden",
-  transition: "opacity 0.2s ease, padding 0.4s ease",
-  paddingLeft: showDropdown && remainingHighlights.length > 0 ? "24px" : "0px",
-  paddingRight: showDropdown && remainingHighlights.length > 0 ? "24px" : "0px",
-  paddingTop: showDropdown && remainingHighlights.length > 0 ? "12px" : "0px",
-  paddingBottom: showDropdown && remainingHighlights.length > 0 ? "12px" : "0px",
-}}
-
-        >
-          <div className="space-y-3">
-            {remainingHighlights.map((highlight, hIndex) => (
-              <div key={hIndex} className="flex items-start gap-3 group">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full mt-2 flex-shrink-0 group-hover:scale-150 transition-transform duration-300"></div>
-                <p className="text-gray-300 transition-colors duration-300 group-hover:text-white leading-relaxed">{highlight}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {remainingHighlights.length > 0 && (
-          <div className="flex justify-center pt-2 pb-4">
-            <button
-              ref={(el) => (arrowRefs.current[index] = el)}
-              onClick={() => handleExpToggle(index, isOpen)}
-              className="mt-2 flex items-center text-blue-400 hover:text-white transition-all duration-300 focus:outline-none transform hover:scale-110"
-              aria-label={isOpen ? "Collapse details" : "Expand details"}
+      <section id="experience" className="py-20 pb-40 bg-gray-800">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12" id="experience-header">
+            <h2
+              className={`text-4xl font-bold mb-4 text-white transition-all duration-1000 ${
+                visibleElements.has("experience-header")
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-8"
+              }`}
             >
-              {isOpen ? (
-                <FaChevronUp size={28} />
-              ) : (
-                <FaChevronDown size={28} />
-              )}
-            </button>
+              Professional Experience
+            </h2>
+            <div
+              className={`w-24 h-1 bg-gradient-to-r from-blue-400 to-emerald-400 mx-auto transition-all duration-1000 delay-200 ${
+                visibleElements.has("experience-header")
+                  ? "opacity-100 scale-x-100"
+                  : "opacity-0 scale-x-0"
+              }`}
+            ></div>
           </div>
-        )}
-      </div>
-    </div>
-  );
-})}
+          <div className="flex flex-wrap -mx-4" id="experience-list">
+            {experience.map((exp, index) => {
+              const isOpen = openExp === index;
+              const isCollapsing = collapsingIndex === index;
+              const showDropdown = isOpen || isCollapsing;
+              const topHighlights = exp.highlights.slice(0, 4);
+              const remainingHighlights = exp.highlights.slice(4);
 
-    </div>
-  </div>
-</section>
+              return (
+                <div key={index} className="w-full sm:w-1/2 px-4 mb-8">
+                  <div className="experience-card glass-card flex flex-col rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                    {/* ... header ... */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 px-6 pt-6">
+                      <div>
+                        <h3 className="text-2xl font-bold text-white mb-1">
+                          {exp.title}
+                        </h3>
+                        <p className="text-blue-400 font-semibold text-lg">
+                          {exp.company}
+                        </p>
+                      </div>
+                      <div className="text-gray-400 mt-2 md:mt-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Calendar size={16} />
+                          <span>{exp.period}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin size={16} />
+                          <span>{exp.location}</span>
+                        </div>
+                      </div>
+                    </div>
 
+                    {/* Always show first 4 points */}
+                    <div className="px-6 pt-0 pb-2">
+                      <div className="space-y-3">
+                        {topHighlights.map((highlight, hIndex) => (
+                          <div
+                            key={hIndex}
+                            className="flex items-start gap-3 group"
+                          >
+                            <div className="w-2 h-2 bg-emerald-400 rounded-full mt-2 flex-shrink-0 group-hover:scale-150 transition-transform duration-300"></div>
+                            <p className="text-gray-300 transition-colors duration-300 group-hover:text-white leading-relaxed">
+                              {highlight}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Animated dropdown for remaining highlights */}
+                    <div
+                      style={{
+                        height: showDropdown ? "auto" : "0px",
+                        opacity: showDropdown ? 1 : 0,
+                        overflow: "hidden",
+                        transition: "opacity 0.2s ease, padding 0.4s ease",
+                        paddingLeft:
+                          showDropdown && remainingHighlights.length > 0
+                            ? "24px"
+                            : "0px",
+                        paddingRight:
+                          showDropdown && remainingHighlights.length > 0
+                            ? "24px"
+                            : "0px",
+                        paddingTop:
+                          showDropdown && remainingHighlights.length > 0
+                            ? "12px"
+                            : "0px",
+                        paddingBottom:
+                          showDropdown && remainingHighlights.length > 0
+                            ? "12px"
+                            : "0px",
+                      }}
+                    >
+                      <div className="space-y-3">
+                        {remainingHighlights.map((highlight, hIndex) => (
+                          <div
+                            key={hIndex}
+                            className="flex items-start gap-3 group"
+                          >
+                            <div className="w-2 h-2 bg-emerald-400 rounded-full mt-2 flex-shrink-0 group-hover:scale-150 transition-transform duration-300"></div>
+                            <p className="text-gray-300 transition-colors duration-300 group-hover:text-white leading-relaxed">
+                              {highlight}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {remainingHighlights.length > 0 && (
+                      <div className="flex justify-center pt-2 pb-4">
+                        <button
+                          ref={(el) => (arrowRefs.current[index] = el)}
+                          onClick={() => handleExpToggle(index, isOpen)}
+                          className="mt-2 flex items-center text-blue-400 hover:text-white transition-all duration-300 focus:outline-none transform hover:scale-110"
+                          aria-label={
+                            isOpen ? "Collapse details" : "Expand details"
+                          }
+                        >
+                          {isOpen ? (
+                            <FaChevronUp size={28} />
+                          ) : (
+                            <FaChevronDown size={28} />
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
       <section id="projects" className="py-20 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1132,7 +1167,7 @@ style={{
                   animation: "gradient-x 3s ease infinite",
                 }}
               >
-                Show All Projects 
+                Show All Projects
                 <FaChevronDown className="transition-transform duration-300 group-hover:translate-y-1" />
               </button>
             )}
@@ -1146,7 +1181,7 @@ style={{
                   animation: "gradient-x 3s ease infinite",
                 }}
               >
-                Show Less 
+                Show Less
                 <FaChevronUp className="transition-transform duration-300 group-hover:-translate-y-1" />
               </button>
             )}
