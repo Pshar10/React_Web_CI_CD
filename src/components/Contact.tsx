@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { Mail, Linkedin, Github } from "lucide-react";
 
 interface ContactCard {
@@ -37,10 +37,14 @@ const contactItems: ContactCard[] = [
   },
 ];
 
-const Contact: React.FC<ContactProps> = ({ visibleElements }) => {
+const Contact = forwardRef<HTMLElement, ContactProps>(({ visibleElements }, ref) => {
   return (
-    <section id="contact" className="py-20 bg-gray-800">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <section
+      id="contact"
+      ref={ref}
+      className="min-h-screen bg-gray-800 text-white flex flex-col justify-center items-center py-20"
+    >
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
         <div className="mb-12" id="contact-header">
           <h2
             className={`text-4xl font-bold mb-4 text-white transition-all duration-1000 ${
@@ -57,7 +61,7 @@ const Contact: React.FC<ContactProps> = ({ visibleElements }) => {
                 ? "opacity-100 scale-x-100"
                 : "opacity-0 scale-x-0"
             }`}
-          ></div>
+          />
           <p
             className={`text-gray-300 text-lg max-w-2xl mx-auto transition-all duration-1000 delay-400 ${
               visibleElements.has("contact-header")
@@ -65,9 +69,7 @@ const Contact: React.FC<ContactProps> = ({ visibleElements }) => {
                 : "opacity-0 translate-y-8"
             }`}
           >
-            I'm always interested in discussing new opportunities, innovative
-            projects, and collaborations in DevOps, cloud computing, and audio
-            technology.
+            I'm always interested in discussing new opportunities, innovative projects, and collaborations in DevOps, cloud computing, and audio technology.
           </p>
         </div>
 
@@ -76,23 +78,28 @@ const Contact: React.FC<ContactProps> = ({ visibleElements }) => {
             <a
               key={index}
               href={contact.href}
-              className={`
-                glass-card flex flex-col items-center p-6 rounded-lg
-                transition-all duration-300 group transform
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`glass-card flex flex-col items-center p-6 rounded-lg shadow-md
+                transition-transform duration-300 transform
                 hover:scale-105 hover:shadow-2xl
+                group
                 ${
                   visibleElements.has("contact-cards")
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-8"
                 }
               `}
-              style={{ transitionDelay: `${50}ms` }}
-              target="_blank"
-              rel="noopener noreferrer"
+              style={{ transitionDelay: `${index * 150}ms` }}
+              aria-label={`${contact.title} link`}
             >
               <contact.icon
-                className={`text-${contact.color}-400 group-hover:text-${contact.color}-300 mb-3 transition-all duration-300 transform group-hover:scale-110 group-hover:rotate-12`}
                 size={32}
+                className={`
+                  mb-3 transition-transform duration-300 transform
+                  group-hover:scale-110 group-hover:rotate-12
+                  text-${contact.color}-400 group-hover:text-${contact.color}-300
+                `}
               />
               <h3 className="font-semibold mb-2 text-white group-hover:text-white transition-colors duration-300">
                 {contact.title}
@@ -106,6 +113,8 @@ const Contact: React.FC<ContactProps> = ({ visibleElements }) => {
       </div>
     </section>
   );
-};
+});
+
+Contact.displayName = "Contact";
 
 export default Contact;
