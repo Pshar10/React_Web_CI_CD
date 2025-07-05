@@ -1,4 +1,3 @@
-// App.tsx
 import React, { useState, useEffect, useRef } from "react";
 import { ArrowUp } from "lucide-react";
 
@@ -17,22 +16,46 @@ import projectData from "./constants/projects";
 const App: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
-  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showMobileScrollTop, setShowMobileScrollTop] = useState(false);
   const [visibleElements, setVisibleElements] = useState(new Set<string>());
-  const observerRef = useRef<IntersectionObserver | null>(null);
 
+  const contactRef = useRef<HTMLElement | null>(null);
+
+  // Track scroll position (for desktop "Back to Top" button visibility)
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);
-      setShowScrollTop(window.scrollY > 400); // Show button after scrolling
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Intersection Observer for contact section to show "Back to Top" on small screens
   useEffect(() => {
-    observerRef.current = new IntersectionObserver(
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const isSmallScreen = window.innerWidth <= 768;
+        setShowMobileScrollTop(entry.isIntersecting && isSmallScreen);
+      },
+      {
+        threshold: 0.4, // Show when ~40% visible
+      }
+    );
+
+    if (contactRef.current) {
+      observer.observe(contactRef.current);
+    }
+
+    return () => {
+      if (contactRef.current) {
+        observer.unobserve(contactRef.current);
+      }
+    };
+  }, []);
+
+  // Intersection Observer for tracking visible sections (all ids)
+  useEffect(() => {
+    const observerRef = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && entry.target.id) {
@@ -49,11 +72,9 @@ const App: React.FC = () => {
     );
 
     const elements = document.querySelectorAll("[id]");
-    elements.forEach((el) => {
-      if (observerRef.current) observerRef.current.observe(el);
-    });
+    elements.forEach((el) => observerRef.observe(el));
 
-    return () => observerRef.current?.disconnect();
+    return () => observerRef.disconnect();
   }, []);
 
   const scrollToTop = () => {
@@ -64,10 +85,7 @@ const App: React.FC = () => {
     const element = document.getElementById(sectionId);
     if (element) {
       const offsetTop = element.offsetTop - 80;
-      window.scrollTo({
-        top: offsetTop,
-        behavior: "smooth",
-      });
+      window.scrollTo({ top: offsetTop, behavior: "smooth" });
     }
   };
 
@@ -93,14 +111,15 @@ const App: React.FC = () => {
         projects={projectData}
         scrollToSection={scrollToSection}
       />
-      <Contact visibleElements={visibleElements} />
+      <Contact visibleElements={visibleElements} ref={contactRef} />
       <Footer />
 
-      {/* Scroll to Top Button - hidden on small screens */}
-      {showScrollTop && (
+      {/* Back to Top Button */}
+      {/* Always show on md+ when scrolled down, on small screen only when Contact is in view */}
+      {(showMobileScrollTop || (scrollY > 400 && window.innerWidth > 768)) && (
         <button
           onClick={scrollToTop}
-          className="hidden md:block fixed bottom-6 right-6 z-50 p-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300"
+          className="fixed bottom-6 right-6 z-50 p-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300"
           aria-label="Scroll to top"
         >
           <ArrowUp size={20} />
