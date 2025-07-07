@@ -105,14 +105,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
               )}
             </button>
           </form>
-
-          <div className="mt-8 p-4 bg-gray-700/50 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-300 mb-2">Admin Credentials:</h3>
-            <div className="space-y-1 text-xs text-gray-400">
-              <p><strong>Username:</strong> admin</p>
-              <p><strong>Password:</strong> portfolio2025!</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
