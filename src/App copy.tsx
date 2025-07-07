@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowUp, BarChart3 } from "lucide-react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { ArrowUp } from "lucide-react";
 
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -10,27 +9,18 @@ import Experience from "./components/Experience";
 import Projects from "./components/Projects";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-import Chatbot from "./components/Chatbot";
-import AnalyticsDashboard from "./components/AnalyticsDashboard";
-import { AnalyticsProvider } from "./components/AnalyticsProvider";
-import PrivacyBanner from "./components/PrivacyBanner";
 
 import experienceData from "./constants/experience";
 import projectData from "./constants/projects";
-import { useAnalytics } from "./hooks/useAnalytics";
-import { AuthProvider } from "./components/AuthProvider";
-import ProtectedRoute from "./components/ProtectedRoute";
+import Chatbot from "./components/Chatbot"; 
 
-
-
-const PortfolioHome: React.FC = () => {
+const App: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [showMobileScrollTop, setShowMobileScrollTop] = useState(false);
   const [visibleElements, setVisibleElements] = useState(new Set<string>());
 
   const contactRef = useRef<HTMLElement | null>(null);
-  const { trackSectionView, trackInteraction } = useAnalytics();
 
   // Track scroll position (for desktop "Back to Top" button visibility)
   useEffect(() => {
@@ -74,10 +64,6 @@ const PortfolioHome: React.FC = () => {
               if (prev.has(entry.target.id)) return prev;
               const updated = new Set(prev);
               updated.add(entry.target.id);
-              
-              // Track section view
-              trackSectionView(entry.target.id);
-              
               return updated;
             });
           }
@@ -90,15 +76,13 @@ const PortfolioHome: React.FC = () => {
     elements.forEach((el) => observerRef.observe(el));
 
     return () => observerRef.disconnect();
-  }, [trackSectionView]);
+  }, []);
 
   const scrollToTop = () => {
-    trackInteraction('scroll-to-top-button', 'click');
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const scrollToSection = (sectionId: string) => {
-    trackInteraction('navigation', 'scroll-to-section', { sectionId });
     const element = document.getElementById(sectionId);
     if (element) {
       const offsetTop = element.offsetTop - 80;
@@ -133,20 +117,8 @@ const PortfolioHome: React.FC = () => {
 
       <Chatbot />
 
-      {/* Analytics Dashboard Link */}
-      <Link
-        to="/analytics"
-        className="fixed top-20 right-6 z-40 p-3 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300 group"
-        aria-label="View Analytics Dashboard"
-        onClick={() => trackInteraction('analytics-dashboard-link', 'click')}
-      >
-        <BarChart3 size={20} />
-        <span className="absolute right-full mr-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-          Analytics Dashboard
-        </span>
-      </Link>
-
       {/* Back to Top Button */}
+      {/* Always show on md+ when scrolled down, on small screen only when Contact is in view */}
       {(showMobileScrollTop || (scrollY > 400 && window.innerWidth > 768)) && (
         <button
           onClick={scrollToTop}
@@ -156,31 +128,7 @@ const PortfolioHome: React.FC = () => {
           <ArrowUp size={20} />
         </button>
       )}
-
-      <PrivacyBanner />
     </div>
-  );
-};
-
-const App: React.FC = () => {
-  return (
-    <AuthProvider>
-      <AnalyticsProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<PortfolioHome />} />
-            <Route 
-              path="/analytics" 
-              element={
-                <ProtectedRoute requiredPermission="analytics:read">
-                  <AnalyticsDashboard />
-                </ProtectedRoute>
-              } 
-            />
-          </Routes>
-        </Router>
-      </AnalyticsProvider>
-    </AuthProvider>
   );
 };
 
