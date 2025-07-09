@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { ExternalLink, ChevronDown } from "lucide-react";
 
@@ -21,33 +21,21 @@ const initialVisibleCount = 6;
 const getShortDesc = (desc: string) =>
   desc.length > 85 ? desc.split(".")[0].slice(0, 80) + "..." : desc;
 
-const Projects: React.FC<ProjectsProps> = ({ visibleElements, projects, scrollToSection }) => {
+const Projects: React.FC<ProjectsProps> = ({
+  visibleElements,
+  projects,
+  scrollToSection,
+}) => {
   const [showAllProjects, setShowAllProjects] = useState(false);
-  const projectsDropdownRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [openProjects, setOpenProjects] = useState<{ [key: number]: boolean }>({});
-
-  useEffect(() => {
-    const heights = (
-      showAllProjects ? projects : projects.slice(0, initialVisibleCount)
-    ).map((_, idx) => {
-      const el = projectsDropdownRefs.current[idx];
-      return el && el.scrollHeight ? el.scrollHeight : 0;
-    });
-  }, [showAllProjects]);
+  const [openProjects, setOpenProjects] = useState<{ [key: number]: boolean }>(
+    {}
+  );
 
   const toggleProjectCard = (index: number) => {
-    setOpenProjects((prev) => {
-      const next = { ...prev, [index]: !prev[index] };
-      requestAnimationFrame(() => {
-        const heights = (
-          showAllProjects ? projects : projects.slice(0, initialVisibleCount)
-        ).map((_, idx) => {
-          const el = projectsDropdownRefs.current[idx];
-          return el && el.scrollHeight ? el.scrollHeight : 0;
-        });
-      });
-      return next;
-    });
+    setOpenProjects((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
   };
 
   const visibleProjects = showAllProjects
@@ -55,7 +43,10 @@ const Projects: React.FC<ProjectsProps> = ({ visibleElements, projects, scrollTo
     : projects.slice(0, initialVisibleCount);
 
   return (
-    <section id="projects" className="min-h-screen py-20 bg-gray-900 scroll-snap-start snap-start flex flex-col justify-between">
+    <section
+      id="projects"
+      className="min-h-screen py-20 bg-gray-900 scroll-snap-start snap-start flex flex-col justify-between"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12" id="projects-header">
           <h2
@@ -93,13 +84,11 @@ const Projects: React.FC<ProjectsProps> = ({ visibleElements, projects, scrollTo
                     </div>
                   </div>
 
+                  {/* Expandable content */}
                   <div
-                    style={{
-                      maxHeight: isOpen ? "500px" : "0px",
-                      opacity: isOpen ? 1 : 0,
-                      overflow: "hidden",
-                      transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-                    }}
+                    className={`transition-all duration-300 ease-in-out ${
+                      isOpen ? "opacity-100 scale-y-100" : "opacity-0 scale-y-0"
+                    } origin-top transform`}
                   >
                     {isOpen && (
                       <div className="px-6 py-4">
