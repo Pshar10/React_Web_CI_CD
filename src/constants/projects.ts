@@ -1,5 +1,22 @@
 const projectsData = [
   {
+    title: "PCOS Clinical Decision Support System",
+    subtitle: "AI-Powered PCOS Risk Prediction & Clinical Support",
+    description:
+      "A full-stack web application for clinical decision support in PCOS. Features ML-based risk prediction, retrieval-augmented generation (RAG) for clinical context, and AI chat using local LLMs. Includes model training, comparison, and a dashboard. Built with React, Flask, scikit-learn, Ollama, and Tailwind CSS.",
+    technologies: [
+      "React",
+      "Flask",
+      "scikit-learn",
+      "Ollama",
+      "Tailwind CSS",
+      "RAG",
+      "Machine Learning",
+      "LLM"
+    ],
+    github: "https://github.com/Pshar10/PCOS-Clinical-Decision-Support-System",
+  },
+  {
     title: "CryptoChat AI",
     subtitle: "AI-powered Ethereum Transaction Agent",
     description:
