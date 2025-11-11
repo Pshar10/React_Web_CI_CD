@@ -30,7 +30,7 @@ const Hero: React.FC<HeroProps> = ({ scrollToSection }) => {
             style={{ animationDelay: "0.2s" }}
           >
             <TypeAnimation
-              sequence={["AWS Certified Developer | DevOps Engineer | Audio Technology Specialist"]}
+              sequence={["AWS Certified Developer | DevOps Engineer | Identity & Trust Services"]}
               wrapper="span"
               speed={60}
               style={{ display: "inline-block" }}
