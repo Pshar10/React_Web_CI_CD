@@ -71,7 +71,7 @@ const Hero: React.FC<HeroProps> = ({ scrollToSection }) => {
               <Github size={20} />
             </a>
             <a
-              href="/Pranav_Sharma_CV.pdf"
+              href="/Pranav_CV.pdf"
               download
               className="hero-button flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25"
             >
