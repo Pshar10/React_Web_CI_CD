@@ -1,5 +1,20 @@
 const experienceData = [
   {
+    title: "DevOps Engineer",
+    company: "ecsec GmbH",
+    period: "Sep 2025 – Present",
+    location: "Germany",
+    highlights: [
+      "Designed, deployed, and maintained cloud-native services using Kubernetes, ensuring secure, scalable, and highly available environments across multiple deployments.",
+      "Built and optimized containerized microservices with Docker and modern JVM-based frameworks, improving deployment reliability, performance, and consistency across environments.",
+      "Engineered multi-tenant architectures supporting dynamic configuration, policy management, and environment-specific deployments.",
+      "Integrated advanced cryptographic workflows—such as key management, token handling, and secure exchange mechanisms—into service platforms to enable robust authentication and authorization flows.",
+      "Performed extensive interoperability and integration testing with a wide range of client applications and external systems, improving platform compatibility, reliability, and standards alignment.",
+      "Developed internal tooling, automation scripts, and test frameworks to accelerate debugging, validation, and development processes.",
+      "Implemented and optimized industry-standard protocols to support secure, end-to-end service interactions based on evolving global specifications.",
+    ],
+  },
+  {
     title: "Graduate Researcher",
     company: "Fraunhofer IIS",
     period: "Jan 2022 - Sep 2024",

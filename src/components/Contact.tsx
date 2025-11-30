@@ -42,7 +42,7 @@ const Contact = forwardRef<HTMLElement, ContactProps>(({ visibleElements }, ref)
     <section
       id="contact"
       ref={ref}
-      className="min-h-screen bg-gray-800 text-white flex flex-col justify-center items-center py-20"
+      className="min-h-[clamp(40rem,_100vh,_64rem)] bg-gray-800 text-white flex flex-col justify-center items-center py-[clamp(3rem,_6vw,_5rem)]"
     >
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
         <div className="mb-12" id="contact-header">
