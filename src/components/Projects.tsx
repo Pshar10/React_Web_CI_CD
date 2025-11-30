@@ -45,7 +45,7 @@ const Projects: React.FC<ProjectsProps> = ({
   return (
     <section
       id="projects"
-      className="min-h-screen py-20 bg-gray-900 scroll-snap-start snap-start flex flex-col justify-between"
+      className="min-h-[clamp(40rem,_100vh,_64rem)] py-[clamp(3rem,_6vw,_5rem)] bg-gray-900 scroll-snap-start snap-start flex flex-col justify-between"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12" id="projects-header">

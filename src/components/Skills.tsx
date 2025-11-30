@@ -18,7 +18,7 @@ const Skills: React.FC<SkillsProps> = ({ visibleElements, scrollToSection }) => 
   return (
     <section
       id="skills"
-      className="min-h-screen bg-gray-900 text-white scroll-snap-start snap-start flex flex-col justify-between py-20"
+      className="min-h-[clamp(40rem,_100vh,_64rem)] bg-gray-900 text-white scroll-snap-start snap-start flex flex-col justify-between py-[clamp(3rem,_6vw,_5rem)]"
     >
       <div className="max-w-6xl mx-auto px-4">
         <div

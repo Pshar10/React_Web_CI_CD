@@ -24,7 +24,7 @@ const About: React.FC<AboutProps> = ({ visibleElements, scrollToSection }) => {
   return (
     <section
       id="about"
-      className="min-h-screen bg-gray-800 py-20 scroll-snap-start snap-start flex flex-col justify-between"
+      className="min-h-[clamp(40rem,_100vh,_64rem)] bg-gray-800 py-[clamp(3rem,_6vw,_5rem)] scroll-snap-start snap-start flex flex-col justify-between"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12" id="about-header">
